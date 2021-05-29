@@ -1,5 +1,5 @@
 /*eslint-disable*/
-import React from "react";
+import React, { useState } from "react";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -23,23 +23,46 @@ import CardHeader from "components/Card/CardHeader.js";
 import CustomInput from "components/CustomInput/CustomInput.js";
 
 import loginPageStyle from "assets/jss/material-kit-pro-react/views/loginPageStyle.js";
+import axios from 'axios';
 
 import image from "assets/img/bg7.jpg";
+import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
 
 const useStyles = makeStyles(loginPageStyle);
 
 export default function LoginPage() {
+
+  // 0 for initial, -1 means failed, 1 means logged in, 2 means registered
+  const [status, setStatus] = useState(0);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const login = async () => {
+    if(status === 2) setStatus(1);
+    const response = await axios.post('http://tmmlgpu4.eastus.cloudapp.azure.com:5009/api/v1/query/login', {email, password});
+    if(response.data.message === "Invalid Password") setStatus(-1);
+    if(response.data.message === "Login Successful") setStatus(1);
+    if(response.data.message === "You have been registered succesfully") setStatus(2);
+    if(response.data.message === "Login Successful" || response.data.message === "You have been registered succesfully") localStorage.setItem('email', email);
+  }
+
+
   React.useEffect(() => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
   });
   const classes = useStyles();
+
+  if(status === 1) {
+    return <Redirect to="/ecommerce-page"/>
+  }
+
   return (
     <div>
       <Header
         absolute
         color="transparent"
-        brand="Material Kit PRO React"
+        brand="Revetir"
         links={<HeaderLinks dropdownHoverColor="info" />}
       />
       <div
@@ -61,52 +84,11 @@ export default function LoginPage() {
                     className={classes.cardHeader}
                   >
                     <h4 className={classes.cardTitle}>Login</h4>
-                    <div className={classes.socialLine}>
-                      <Button
-                        justIcon
-                        color="transparent"
-                        className={classes.iconButtons}
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        <i className="fab fa-twitter" />
-                      </Button>
-                      <Button
-                        justIcon
-                        color="transparent"
-                        className={classes.iconButtons}
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        <i className="fab fa-facebook" />
-                      </Button>
-                      <Button
-                        justIcon
-                        color="transparent"
-                        className={classes.iconButtons}
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        <i className="fab fa-google-plus-g" />
-                      </Button>
-                    </div>
                   </CardHeader>
                   <p className={classes.description + " " + classes.textCenter}>
-                    Or Be Classical
+                   
                   </p>
                   <CardBody signup>
-                    <CustomInput
-                      id="first"
-                      formControlProps={{
-                        fullWidth: true,
-                      }}
-                      inputProps={{
-                        placeholder: "First Name...",
-                        type: "text",
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <Face className={classes.inputIconsColor} />
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
                     <CustomInput
                       id="email"
                       formControlProps={{
@@ -115,6 +97,8 @@ export default function LoginPage() {
                       inputProps={{
                         placeholder: "Email...",
                         type: "email",
+                        value: email,
+                        onChange: (e) => setEmail(e.target.value),
                         startAdornment: (
                           <InputAdornment position="start">
                             <Email className={classes.inputIconsColor} />
@@ -130,6 +114,8 @@ export default function LoginPage() {
                       inputProps={{
                         placeholder: "Password",
                         type: "password",
+                        value: password,
+                        onChange: (e) => setPassword(e.target.value),
                         startAdornment: (
                           <InputAdornment position="start">
                             <Icon className={classes.inputIconsColor}>
@@ -140,10 +126,12 @@ export default function LoginPage() {
                         autoComplete: "off",
                       }}
                     />
+                    {status === 2 && "You have been registered successfully"}
+                    {status === -1 && "Invalid Login credentials"}
                   </CardBody>
                   <div className={classes.textCenter}>
-                    <Button simple color="primary" size="lg">
-                      Get started
+                    <Button simple color="primary" size="lg" onClick={login}>
+                      {status === 2 ? "Continue" : "Register/Login"}
                     </Button>
                   </div>
                 </form>
@@ -163,7 +151,7 @@ export default function LoginPage() {
                       target="_blank"
                       className={classes.block}
                     >
-                      Creative Tim
+                   
                     </a>
                   </ListItem>
                   <ListItem className={classes.inlineBlock}>
@@ -172,7 +160,7 @@ export default function LoginPage() {
                       target="_blank"
                       className={classes.block}
                     >
-                      About us
+                      
                     </a>
                   </ListItem>
                   <ListItem className={classes.inlineBlock}>
@@ -180,7 +168,7 @@ export default function LoginPage() {
                       href="//blog.creative-tim.com/"
                       className={classes.block}
                     >
-                      Blog
+                     
                     </a>
                   </ListItem>
                   <ListItem className={classes.inlineBlock}>
@@ -189,21 +177,20 @@ export default function LoginPage() {
                       target="_blank"
                       className={classes.block}
                     >
-                      Licenses
+                    
                     </a>
                   </ListItem>
                 </List>
               </div>
               <div className={classes.right}>
-                &copy; {1900 + new Date().getYear()} , made with{" "}
-                <Favorite className={classes.icon} /> by{" "}
+                
                 <a
                   href="https://www.creative-tim.com?ref=mkpr-login"
                   target="_blank"
                 >
-                  Creative Tim
+                 
                 </a>{" "}
-                for a better web
+               
               </div>
             </div>
           }

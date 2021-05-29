@@ -67,7 +67,7 @@ export default function ProductPage() {
     (async () => {
       const { data } = await axios.post(
         "http://tmmlgpu4.eastus.cloudapp.azure.com:5009/api/v1/query/products/view/",
-        { pid: id, email: "hello123@example.com" }
+        { pid: id, email: localStorage.getItem('email') || "hello123@example.com" }
       );
       console.log({ data });
       setProduct(data.product_info);
@@ -84,7 +84,7 @@ export default function ProductPage() {
         const formData = new FormData();
         formData.append(
           "block_data",
-          `{\n "email":"hello123@example.com",\n"flag":${useOldPic},\n"cloth_image_url": "${product.cloth_url}",\n"host": true\n}`
+          `{\n "email":"${localStorage.getItem('email') || "hello123@example.com"}",\n"flag":${useOldPic},\n"cloth_image_url": "${product.cloth_url}",\n"host": true\n}`
         );
         formData.append("upload_image", file);
         const config = {
@@ -107,7 +107,7 @@ export default function ProductPage() {
     let data = new FormData();
     data.append(
       "block_data",
-      `{\n "email":"hello123@example.com",\n"flag":${useOldPic},\n"cloth_image_url": "${product.cloth_url}",\n"host": true\n}`
+      `{\n "email":"${localStorage.getItem('email') || "hello123@example.com"}",\n"flag":${useOldPic},\n"cloth_image_url": "${product.cloth_url}",\n"host": true\n}`
     );
 
     console.log(data);
@@ -148,8 +148,8 @@ export default function ProductPage() {
         }}
       />
       <Parallax
-        image={require("assets/img/back.jpg").default}
-        //filter="rose"
+        image={require("assets/img/bg6.jpg").default}
+        filter="rose"
         className={classes.pageHeader}
       >
         <div className={classes.container}>
